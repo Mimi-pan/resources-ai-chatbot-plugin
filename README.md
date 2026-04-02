@@ -1,130 +1,46 @@
-# Resources AI Chatbot Plugin
+# AI Chatbot to Guide User Workflow
 
-## Introduction
+A GSoC 2026 project for Jenkins — an AI-powered chatbot that helps users navigate Jenkins workflows, access documentation, and troubleshoot issues using natural language.
 
-Beginners often struggle to take their first steps with Jenkins’ documentation and available resources. To address this challenge, this plugin integrates an AI-powered assistant directly into the Jenkins interface. It offers quick, intuitive support to users of all experience levels through a simple conversational UI.
+## About
 
-The plugin is designed to reduce the learning curve for newcomers while also improving accessibility and productivity for experienced users.
+This plugin integrates an AI chatbot directly into Jenkins UI, allowing users to ask questions and get answers grounded in official Jenkins documentation — without leaving Jenkins.
 
-This plugin was developed as part of a Google Summer of Code 2025 project.
+## Current Progress
 
-## Prerequisites
+- RAG pipeline using FAISS + sentence-transformers
+- Local LLM: Mistral 7B via llama-cpp (no cloud dependency)
+- FastAPI backend with session management
+- Answers questions from Jenkins official docs
 
-- **Python**: 3.11+
-- **Build tools**: `make`, `cmake` (≥3.14), C/C++ compiler (`gcc`/`clang`/MSVC)
-- **Java**: JDK 11+ and Maven 3.6+ (for plugin development)
+## Tech Stack
 
-### Example system package installation
+- Python, FastAPI, LangChain
+- FAISS (vector search)
+- Mistral 7B Q4_K_M (local LLM via llama-cpp)
+- sentence-transformers/all-MiniLM-L6-v2
 
-```bash
-# Ubuntu/Debian/WSL
-sudo apt install -y make cmake gcc g++ python3.11 python3.11-venv python3.11-dev
+## What I Changed from Original Plugin
 
-# macOS
-brew install cmake python@3.11 && xcode-select --install
-```
+- Downloaded Mistral 7B Q4_K_M GGUF model from HuggingFace
+- Rebuilt FAISS index using Jenkins documentation chunks
+- Fixed metadata format to match plugin expected schema
+- Resolved dependency conflicts (langchain, python-multipart)
+- Verified end-to-end: question → RAG retrieval → LLM answer
 
+## Example Output
 
+Question: How to create a Jenkins pipeline?
+Answer: To create a Jenkins pipeline, follow these steps:
+1. Install Jenkins and the Pipeline plugin
+2. Create a new Jenkins project
+3. Create a Jenkinsfile in your repository
+4. Write pipeline stages using Pipeline syntax
+5. Commit the Jenkinsfile to source control
 
-## Getting Started
+## GSoC 2026
 
-There are two ways to run the API locally, depending on your use case:
-
-### Option 1: Lite Mode (Recommended for Most Contributors)
-
-Use this if you're working on the API, backend logic, data pipeline, or tests and don't need to test the actual chatbot responses.
-
-```bash
-make dev-lite
-```
-
-This will:
-- Set up the Python environment automatically
-- Install dependencies (skips the 4GB model download)
-- Start the API server without loading the LLM
-
-The API will be available at `http://127.0.0.1:8000` within a few minutes.
-
-Verify it's working:
-```bash
-curl -X POST http://127.0.0.1:8000/api/chatbot/sessions
-```
-
-**What works:** All API endpoints, session management, context search, data pipeline  
-**What doesn't work:** Actual chat completions (no model loaded)
-
-### Option 2: Full Mode (For Testing Chat Functionality)
-
-Use this if you need to test the chatbot with real LLM responses or work on model-specific features.
-
-First, complete the full setup in [docs/setup.md](docs/setup.md). This includes installing llama-cpp-python and downloading the 4GB model.
-
-Then run:
-```bash
-make api
-```
-
-The API will be available at `http://127.0.0.1:8000`.
-
-**What works:** Everything, including actual chat completions with the local LLM
-
----
-
-See [docs/README.md](docs/README.md) for detailed explanations.
-
-## 🎥 Setup Video Tutorial
-
-[![Local Setup Video Tutorial](https://img.youtube.com/vi/1DnMNA4aLyE/0.jpg)](https://youtu.be/1DnMNA4aLyE)
-
-The tutorial shows how to fork the repo, set up the backend, download the LLM model, run the frontend, and verify the chatbot works.
-
-
-
-## Troubleshooting
-
-### Model Downloads
-- **Symptom**: The application appears "stuck" or frozen during the first run of the data pipeline or API.
-- **Cause**: The system is downloading the embedding model (`all-MiniLM-L6-v2`, ~80MB) or initializing the LLM.
-- **Solution**: This is normal behavior for the first run. Please wait for a few minutes. Ensure you have a stable internet connection.
-
-### Python Version Mismatches
-- **Symptom**: `SyntaxError` or `ModuleNotFoundError` during setup or execution.
-- **Solution**: 
-  - Ensure you are using **Python 3.11+**. Verify with `python --version`.
-  - Ensure the virtual environment is activated:
-    ```bash
-    source chatbot-core/venv/bin/activate
-    ```
-
-### Common Startup Errors
-- **Memory Limits**: If the process is killed (e.g., `OOM Killed`), ensure your machine has sufficient RAM (at least 8GB recommended for full mode). Try running in **Lite Mode** (`make dev-lite`) first.
-- **Missing Dependencies**: If you see import errors, re-run dependency installation:
-  ```bash
-  pip install -r chatbot-core/requirements.txt
-  ```
-- **llama-cpp-python installation fails**: Ensure build tools (gcc, cmake) are installed. See [docs/setup.md](docs/setup.md) for platform-specific instructions.
-
-### Verification Steps
-To confirm your local setup is correct:
-1. **Virtual Environment**: Ensure `(venv)` appears in your terminal prompt.
-2. **Lite Mode Check**: Run `make dev-lite`. It should start without errors.
-3. **API Check**: Run `curl -X POST http://127.0.0.1:8000/api/chatbot/sessions`. It should return a default session response.
-
-For more details, see [docs/setup.md](docs/setup.md).
-
-## Developer Documentation
-
-Development-related documentation can be found in the [`docs/`](docs/) directory.
-
-- [Setup Guide](docs/setup.md)
-- [Windows/WSL2 Setup Guide](docs/windows-setup.md) — for contributors on Windows machines
-
-## Contributing
-
-Refer to our [contribution guidelines](https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md)
-
-## LICENSE
-
-Licensed under MIT, see [LICENSE](LICENSE.md)
-
-
+- Proposal: AI Chatbot to Guide User Workflow
+- Organization: Jenkins
+- Contributor: Mimi-pan
+- Mentors: Kris Stern, Shivay Lamba, Chirag Gupta
